@@ -2,8 +2,6 @@ package com.project.library.interfaces;
 
 import com.project.library.DTO.UserDTO;
 import com.project.library.model.User;
-
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public interface UserInterface {
