@@ -7,12 +7,7 @@ import com.project.library.model.User;
 import com.project.library.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
-
-import static java.lang.String.valueOf;
 
 @Service
 public class UserService implements UserInterface {
