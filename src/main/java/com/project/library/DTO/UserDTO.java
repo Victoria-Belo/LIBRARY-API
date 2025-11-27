@@ -5,12 +5,12 @@ import jakarta.validation.constraints.Size;
 
 public class UserDTO {
 
-    @NotBlank
-    @Email
+    @NotBlank(groups = {UserDTOValidation.Create.class, UserDTOValidation.UpdateEmail.class})
+    @Email(groups = {UserDTOValidation.Create.class, UserDTOValidation.UpdateEmail.class})
     private String email;
 
-    @NotBlank
-    @Size(min = 5, message = "A senha deve ter pelo menos 5 caracteres")
+    @NotBlank(groups = {UserDTOValidation.Create.class, UserDTOValidation.UpdatePassword.class})
+    @Size(min = 5, groups = {UserDTOValidation.Create.class, UserDTOValidation.UpdatePassword.class}, message = "Password must have at least 5 characters.")
     private String password;
 
     public UserDTO(String email, String password) {

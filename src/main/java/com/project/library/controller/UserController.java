@@ -1,10 +1,12 @@
 package com.project.library.controller;
+
 import com.project.library.DTO.UserDTO;
+import com.project.library.DTO.UserDTOValidation;
 import com.project.library.model.User;
 import com.project.library.service.UserService;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @RestController
@@ -28,7 +30,10 @@ public class UserController {
     }
 
     @PostMapping("/")
-    public User createUser(@RequestBody UserDTO dto) {
+    public User createUser(
+            @Validated(UserDTOValidation.Create.class)
+            @RequestBody UserDTO dto
+    ) {
         return userService.createUser(dto);
     }
 
@@ -39,12 +44,20 @@ public class UserController {
     }
 
     @PatchMapping("email/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody UserDTO email){
+    public User updateEmail(
+            @PathVariable Long id,
+            @Validated(UserDTOValidation.UpdateEmail.class)
+            @RequestBody UserDTO email
+    ) {
         return userService.update(id, email);
     }
 
     @PatchMapping("password/{id}")
-    public User updatePassword(@PathVariable Long id, @RequestBody UserDTO password){
+    public User updatePassword(
+            @PathVariable Long id,
+            @Validated(UserDTOValidation.UpdatePassword.class)
+            @RequestBody UserDTO password
+    ) {
         return userService.updatePassword(id, password);
     }
 }
