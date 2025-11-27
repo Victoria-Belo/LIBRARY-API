@@ -10,8 +10,12 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long ID;
+    private long id;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
     private String password;
 
     @CreationTimestamp
@@ -26,7 +30,7 @@ public class User {
     }
 
     public long getID(){
-        return ID;
+        return id;
     }
 
     public String getEmail() {
