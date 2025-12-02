@@ -1,4 +1,5 @@
 package com.project.library.service;
+import com.project.library.DTO.UserAuthenticationDTO;
 import com.project.library.DTO.UserDTO;
 import com.project.library.exceptions.UserErrorType;
 import com.project.library.exceptions.UserValidationException;
@@ -77,5 +78,16 @@ public class UserService implements UserInterface {
 
     public boolean verifyPassword(String raw, String hashed) {
         return new BCryptPasswordEncoder().matches(raw, hashed);
+    }
+
+    public User loginRequest(UserAuthenticationDTO dto){
+        if(!repository.existsByEmail(dto.getEmail())){
+            throw new UserValidationException(UserErrorType.EMAIL_NOT_FOUND);
+        }
+        User user = repository.findByEmail(dto.getEmail());
+        if(!verifyPassword(dto.getPassword(), user.getPassword())){
+            throw new UserValidationException(UserErrorType.INVALID_PASSWORD);
+        }
+        return user;
     }
 }
