@@ -17,7 +17,7 @@ public class UserAuthenticationDTO {
     @Size(min = 5)
     private String password;
 
-    UserAuthenticationDTO(String email, String password) {
+    public UserAuthenticationDTO(String email, String password) {
         this.email = email;
         this.password = password;
     }
