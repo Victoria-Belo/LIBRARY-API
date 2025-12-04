@@ -1,9 +1,13 @@
 package com.project.library.controller;
 
+import com.project.library.DTO.LoginResponseDTO;
+import com.project.library.DTO.UserAuthenticationDTO;
 import com.project.library.DTO.UserDTO;
 import com.project.library.DTO.UserDTOValidation;
+import com.project.library.config.security.JwtService;
 import com.project.library.model.User;
 import com.project.library.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,9 +18,11 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final JwtService jwtService;
 
-    public UserController(UserService userService){
+    public UserController(UserService userService, JwtService jwtService){
         this.userService = userService;
+        this.jwtService = jwtService;
     }
 
     @GetMapping("/{id}")
@@ -59,5 +65,13 @@ public class UserController {
             @RequestBody UserDTO password
     ) {
         return userService.updatePassword(id, password);
+    }
+
+    @PostMapping("/login")
+    public LoginResponseDTO loginRequest(@Valid @RequestBody UserAuthenticationDTO dto){
+        User user = userService.loginRequest(dto);
+        String token = jwtService.generateToken(user);
+
+        return new LoginResponseDTO(token);
     }
 }
