@@ -17,7 +17,6 @@ import java.io.IOException;
 /**
  * @author Victoria
  */
-
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
 
