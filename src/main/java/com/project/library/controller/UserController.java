@@ -4,38 +4,49 @@ import com.project.library.DTO.LoginResponseDTO;
 import com.project.library.DTO.UserAuthenticationDTO;
 import com.project.library.DTO.UserDTO;
 import com.project.library.DTO.UserDTOValidation;
-import com.project.library.config.security.JwtService;
+import com.project.library.config.security.TokenService;
 import com.project.library.model.User;
 import com.project.library.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("api/v1/user")
 public class UserController {
 
     private final UserService userService;
-    private final JwtService jwtService;
 
-    public UserController(UserService userService, JwtService jwtService){
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private TokenService tokenService;
+
+    public UserController(UserService userService){
         this.userService = userService;
-        this.jwtService = jwtService;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public User getUser(@PathVariable Long id){
         return userService.user(id);
     }
 
-    @GetMapping("/")
+
+    @GetMapping("/list")
     public List<User> getUsers(){
         return userService.users();
     }
 
-    @PostMapping("/")
+    @PostMapping("/register")
     public User createUser(
             @Validated(UserDTOValidation.Create.class)
             @RequestBody UserDTO dto
@@ -43,13 +54,13 @@ public class UserController {
         return userService.createUser(dto);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public User removeUser(@PathVariable Long id){
         userService.remove(id);
         return null;
     }
 
-    @PatchMapping("email/{id}")
+    @PatchMapping("/email/{id}")
     public User updateEmail(
             @PathVariable Long id,
             @Validated(UserDTOValidation.UpdateEmail.class)
@@ -58,7 +69,7 @@ public class UserController {
         return userService.update(id, email);
     }
 
-    @PatchMapping("password/{id}")
+    @PatchMapping("/password/{id}")
     public User updatePassword(
             @PathVariable Long id,
             @Validated(UserDTOValidation.UpdatePassword.class)
@@ -67,11 +78,17 @@ public class UserController {
         return userService.updatePassword(id, password);
     }
 
-    @PostMapping("/login")
-    public LoginResponseDTO loginRequest(@Valid @RequestBody UserAuthenticationDTO dto){
-        User user = userService.loginRequest(dto);
-        String token = jwtService.generateToken(user);
+    public User updateAuth(@PathVariable Long id, @RequestBody UserAuthenticationDTO dto){
+        return userService.updateAuth(id, dto);
+    }
 
-        return new LoginResponseDTO(token);
+    @PostMapping("/login")
+    public ResponseEntity loginRequest(@Valid @RequestBody UserAuthenticationDTO dto){
+       var usernamePassword = new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword());
+       var auth = this.authenticationManager.authenticate(usernamePassword);
+
+       var token = tokenService.generateToken((User) Objects.requireNonNull(auth.getPrincipal()));
+       System.out.println("usernamePassword " + usernamePassword + "\nauth " + auth + "\ntoken " + token);
+       return ResponseEntity.ok(token);
     }
 }

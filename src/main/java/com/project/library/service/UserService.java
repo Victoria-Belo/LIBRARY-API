@@ -5,8 +5,10 @@ import com.project.library.exceptions.UserErrorType;
 import com.project.library.exceptions.UserValidationException;
 import com.project.library.interfaces.UserInterface;
 import com.project.library.model.User;
+import com.project.library.model.UserRole;
 import com.project.library.repository.UserRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -14,9 +16,11 @@ import java.util.List;
 public class UserService implements UserInterface {
 
     private final UserRepository repository;
+    private final PasswordEncoder encoder;
 
-    public UserService(UserRepository repository){
+    public UserService(UserRepository repository, PasswordEncoder encoder){
         this.repository = repository;
+        this.encoder = encoder;
     }
 
     @Override
@@ -31,15 +35,15 @@ public class UserService implements UserInterface {
 
     @Override
     public User createUser(UserDTO dto) {
-        System.out.println("SERVICE: " + dto.toString());
+        System.out.println("dto: " + dto);
         if( repository.existsByEmail(dto.getEmail())){
             throw new UserValidationException(UserErrorType.USER_TAKEN);
         }
         String crypto = hashing(dto.getPassword());
         dto.setPassword(crypto);
         User user = new User(dto.getEmail(), dto.getPassword());
-        repository.save(user);
-        return user;
+
+        return repository.save(user);
     }
 
     @Override
@@ -59,7 +63,7 @@ public class UserService implements UserInterface {
         if(!dto.getEmail().equals(user.getEmail())){
             user.setEmail(dto.getEmail());
         }
-        return user;
+        return repository.save(user);
     }
 
     public User updatePassword(long id, UserDTO dto){
@@ -69,22 +73,35 @@ public class UserService implements UserInterface {
         User user = repository.findById(id);
         String crypto = hashing(dto.getPassword());
         user.setPassword(crypto);
-        return user;
+        return repository.save(user);
+    }
+
+    public User updateAuth(long id, UserAuthenticationDTO dto){
+        if(!repository.existsById(id)){
+            throw new UserValidationException(UserErrorType.USER_NOT_FOUND);
+        }
+        User user = repository.findById(id);
+        if(dto.getAuth().equalsIgnoreCase("admin")){
+            user.setRole(UserRole.ADMIN);
+        }else{
+            user.setRole(UserRole.USER);
+        }
+        return repository.save(user);
     }
 
     public String hashing(String password) {
-        return new BCryptPasswordEncoder().encode(password);
+        return encoder.encode(password);
     }
 
     public boolean verifyPassword(String raw, String hashed) {
-        return new BCryptPasswordEncoder().matches(raw, hashed);
+        return encoder.matches(raw, hashed);
     }
 
-    public User loginRequest(UserAuthenticationDTO dto){
+    public UserDetails loginRequest(UserAuthenticationDTO dto){
         if(!repository.existsByEmail(dto.getEmail())){
             throw new UserValidationException(UserErrorType.EMAIL_NOT_FOUND);
         }
-        User user = repository.findByEmail(dto.getEmail());
+        UserDetails user = repository.findByEmail(dto.getEmail());
         if(!verifyPassword(dto.getPassword(), user.getPassword())){
             throw new UserValidationException(UserErrorType.INVALID_PASSWORD);
         }
