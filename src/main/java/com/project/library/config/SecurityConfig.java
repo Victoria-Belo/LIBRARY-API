@@ -19,7 +19,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 /**
  * @author Victoria
  */
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
