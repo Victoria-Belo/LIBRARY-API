@@ -17,10 +17,9 @@ public class UserAuthenticationDTO {
     @Size(min = 5)
     private String password;
 
-    public UserAuthenticationDTO(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
+    private String auth;
+
+    public UserAuthenticationDTO() { }
 
     public String getEmail() {
         return email;
@@ -30,5 +29,12 @@ public class UserAuthenticationDTO {
         return password;
     }
 
+    public String getAuth() {
+        return auth;
+    }
+
+    public void setAuth(String auth){
+        this.auth = auth;
+    }
 
 }
