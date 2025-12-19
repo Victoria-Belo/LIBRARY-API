@@ -1,6 +1,5 @@
 package com.project.library.controller;
 
-import com.project.library.DTO.LoginResponseDTO;
 import com.project.library.DTO.UserAuthenticationDTO;
 import com.project.library.DTO.UserDTO;
 import com.project.library.DTO.UserDTOValidation;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
