@@ -1,25 +1,32 @@
 package com.project.library.DTO;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author Victoria
- *  image  cover_edition_key($key = olid | $Size: S, M, L).
- *  https://covers.openlibrary.org/b/$key/$value-$size.jpg
- *  Exemplo https://covers.openlibrary.org/b/olid/OL51694024M-M.jpg
+
  */
 public class OpenLibraryDTO {
 
-    private String authorName;
+    private List<String> authorName;
     private String title;
     private String image;
-    private int totalPages;
 
-    OpenLibraryDTO(){}
 
-    public String getAuthorName() {
+    public OpenLibraryDTO(){}
+
+    public OpenLibraryDTO(List<String> authorName,String title, String image){
+        this.authorName = authorName;
+        this.title=title;
+        this.image = image;
+    }
+
+    public List<String> getAuthorName() {
         return authorName;
     }
 
-       public String getTitle() {
+    public String getTitle() {
         return title;
     }
 
@@ -27,9 +34,12 @@ public class OpenLibraryDTO {
         return image;
     }
 
-
-    public int getTotalPages() {
-        return totalPages;
+    @Override
+    public String toString() {
+        return "OpenLibraryDTO{" +
+                "authorName='" + authorName + '\'' +
+                ", title='" + title + '\'' +
+                ", image='" + image + '\'' +
+                '}';
     }
-
 }
