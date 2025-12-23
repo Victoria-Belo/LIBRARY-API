@@ -41,6 +41,7 @@ public class TokenService {
     public String validateToken(String token){
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
+            System.out.println("token" + token);
             return JWT.require(algorithm)
                     .withIssuer("hermes")
                     .build()

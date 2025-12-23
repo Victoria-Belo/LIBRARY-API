@@ -29,13 +29,29 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var token = this.recoverToken(request);
-        if(token != null){
+        try {
             var subject = tokenService.validateToken(token);
-            System.out.println("[doFilterInternal] Irei usar esse email para saber se existe: " + subject);
+            System.out.println("subject "+  subject);
             UserDetails user = userRepository.findByEmail(subject);
-            var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-            System.out.println("Encontrei user: " + user + "\nauthentication: " + authentication);
+
+            var authentication =
+                    new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        } catch (RuntimeException e) {
+
+            SecurityContextHolder.clearContext();
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("""
+                {
+                  "status": 401,
+                  "error": "Unauthorized",
+                  "message": "Invalid or expired token"
+                }
+                """);
+            return;
         }
         filterChain.doFilter(request, response);
     }
@@ -43,7 +59,6 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     private String recoverToken(HttpServletRequest request){
         var authHeader = request.getHeader("Authorization");
-        System.out.println("Header carregou valor do token: " + authHeader);
         if(authHeader == null){
             return null;
         }
