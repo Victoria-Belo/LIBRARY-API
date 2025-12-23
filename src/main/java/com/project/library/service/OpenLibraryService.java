@@ -1,6 +1,8 @@
 package com.project.library.service;
 
 import com.project.library.DTO.OpenLibraryDTO;
+import com.project.library.exceptions.ExternalApiErrorType;
+import com.project.library.exceptions.ExternalApiException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -32,12 +34,11 @@ public class OpenLibraryService {
         )
                 .retrieve()
                 .onStatus( status -> !status.is2xxSuccessful(),
-                        response -> Mono.error(new Throwable("Problema com API externa"))
+                        response -> Mono.error(new ExternalApiException(ExternalApiErrorType.EXTERNAL_API_ERROR))
                                 )
                 .bodyToMono(JsonNode.class)
                 .block();
 
-        System.out.println("->" + client);
         JsonNode authorsNode = client.get("docs").get(0).get("author_name");
 
         List<String> authors = new ArrayList<>();
@@ -51,10 +52,8 @@ public class OpenLibraryService {
         String title = client.get("docs").get(0).get("title").asText();
         String image ="https://covers.openlibrary.org/b/id/" + cover_i + "-M.jpg";
 
-
        OpenLibraryDTO response = new OpenLibraryDTO(authors, title, image);
 
-       System.out.println(response);
        return response;
     }
 
