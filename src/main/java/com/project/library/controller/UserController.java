@@ -1,16 +1,20 @@
 package com.project.library.controller;
 
+import com.project.library.DTO.OpenLibraryDTO;
 import com.project.library.DTO.UserAuthenticationDTO;
 import com.project.library.DTO.UserDTO;
 import com.project.library.DTO.UserDTOValidation;
 import com.project.library.config.security.TokenService;
+import com.project.library.model.FavoriteBook;
 import com.project.library.model.User;
+import com.project.library.service.BookService;
 import com.project.library.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +26,9 @@ import java.util.Objects;
 public class UserController {
 
     private final UserService userService;
+
+    @Autowired
+    private BookService bookService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -89,4 +96,20 @@ public class UserController {
        System.out.println("usernamePassword " + usernamePassword + "\nauth " + auth + "\ntoken " + token);
        return ResponseEntity.ok(token);
     }
+
+    @GetMapping("/books")
+    public List<FavoriteBook> getBooks(
+            @AuthenticationPrincipal User user
+    ) {
+        return bookService.allBooks(user.getEmail());
+    }
+
+    @PostMapping("/book/add")
+    public User addBook(@AuthenticationPrincipal User user, @RequestBody OpenLibraryDTO dto){
+        return bookService.addBook(user.getEmail(), dto);
+    }
+
+    @DeleteMapping("/book/remove")
+    public void removeBook(){}
+
 }
