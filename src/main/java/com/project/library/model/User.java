@@ -1,4 +1,5 @@
 package com.project.library.model;
+import com.project.library.DTO.OpenLibraryDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
@@ -7,6 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -31,12 +33,20 @@ public class User implements UserDetails {
     @NotNull
     private UserRole role;
 
+    @ElementCollection
+    @CollectionTable(
+            name = "user_favorite_books",
+            joinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<FavoriteBook> books;
+
     public User(){}
 
     public User(String email, String password) {
         this.email = email;
         this.password = password;
         role = UserRole.USER;
+        this.books = new ArrayList<>();
     }
 
     public long getID(){
@@ -67,6 +77,16 @@ public class User implements UserDetails {
         this.createdAt = createdAt;
     }
 
+    public List<FavoriteBook> getBooks() {
+        return books;
+    }
+
+    public void addBook(FavoriteBook book){
+        if(this.books == null){
+           this.books = new ArrayList<>();
+        }
+        this.books.add(book);
+    }
 
     @Override
     public String toString() {

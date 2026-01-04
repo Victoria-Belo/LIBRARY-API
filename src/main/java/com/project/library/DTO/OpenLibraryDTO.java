@@ -4,14 +4,12 @@ import java.util.List;
 
 /**
  * @author Victoria
-
- */
+U    */
 public class OpenLibraryDTO {
 
     private List<String> authorName;
     private String title;
     private String image;
-
 
     public OpenLibraryDTO(){}
 

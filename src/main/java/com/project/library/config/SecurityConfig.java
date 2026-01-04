@@ -1,6 +1,8 @@
 package com.project.library.config;
 
 import com.project.library.config.security.SecurityFilter;
+import com.project.library.exceptions.CustomAccessDeniedHandler;
+import com.project.library.exceptions.JwtAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,15 +28,28 @@ public class SecurityConfig {
     @Autowired
     SecurityFilter securityFilter;
 
+    @Autowired
+    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+    @Autowired
+    private CustomAccessDeniedHandler customAccessDeniedHandler;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler)
+                )
                 .authorizeHttpRequests(authorize -> authorize
+
                         .requestMatchers(HttpMethod.GET, "/api/v1/user/list").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/v1/user/id/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/user/login").permitAll()
                         .anyRequest().authenticated()
+
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
