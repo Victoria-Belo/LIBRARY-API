@@ -29,29 +29,13 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var token = this.recoverToken(request);
-        try {
+        if(token != null){
             var subject = tokenService.validateToken(token);
-            System.out.println("subject "+  subject);
+            System.out.println("subject: "+  subject);
             UserDetails user = userRepository.findByEmail(subject);
-
             var authentication =
                     new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        } catch (RuntimeException e) {
-
-            SecurityContextHolder.clearContext();
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("""
-                {
-                  "status": 401,
-                  "error": "Unauthorized",
-                  "message": "Invalid or expired token"
-                }
-                """);
-            return;
         }
         filterChain.doFilter(request, response);
     }
@@ -63,5 +47,10 @@ public class SecurityFilter extends OncePerRequestFilter {
             return null;
         }
         return authHeader.replace("Bearer ", "");
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getServletPath().equals("/api/v1/user/login");
     }
 }
