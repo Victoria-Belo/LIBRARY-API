@@ -110,6 +110,9 @@ public class UserController {
     }
 
     @DeleteMapping("/book/remove")
-    public void removeBook(){}
+    public User removeBook(@AuthenticationPrincipal User user, @RequestParam String title){
+        bookService.removeBook(user.getEmail(), title);
+        return null;
+    }
 
 }
