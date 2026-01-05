@@ -9,6 +9,7 @@ import com.project.library.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.MissingFormatArgumentException;
 
 /**
  * @author Victoria
@@ -40,5 +41,21 @@ public class BookService {
         user.addBook(favoriteBook);
         userRepository.save(user);
         return user;
+    }
+
+    public void removeBook(String email, String title){
+        var user = userRepository.findUserEmailQuery(email);
+        if(user == null){
+            throw new UserValidationException(UserErrorType.USER_NOT_FOUND);
+        }
+        if(title == null || title.isEmpty()){
+            throw new UserValidationException(UserErrorType.TITLE_IS_EMPTY);
+        }
+        boolean removed = user.getBooks()
+                .removeIf(book -> book.getTitle().equalsIgnoreCase(title));
+        if (!removed) {
+            throw new UserValidationException(UserErrorType.BOOK_NOT_FOUND);
+        }
+        userRepository.save(user);
     }
 }
