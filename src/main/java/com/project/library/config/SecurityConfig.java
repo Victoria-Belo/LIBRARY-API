@@ -44,12 +44,11 @@ public class SecurityConfig {
                         .accessDeniedHandler(customAccessDeniedHandler)
                 )
                 .authorizeHttpRequests(authorize -> authorize
-
                         .requestMatchers(HttpMethod.GET, "/api/v1/user/list").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/v1/user/id/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/v1/user/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/user/register").permitAll()
                         .anyRequest().authenticated()
-
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
