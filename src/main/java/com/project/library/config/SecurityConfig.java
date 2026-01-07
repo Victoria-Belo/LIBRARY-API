@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .accessDeniedHandler(customAccessDeniedHandler)
                 )
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/user/list").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/v1/user/id/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/v1/user/login").permitAll()
