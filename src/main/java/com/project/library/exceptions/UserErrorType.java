@@ -11,6 +11,7 @@ public enum UserErrorType {
     PASSWORD_TOO_SHORT("Password must have at least 5 characters.", HttpStatus.BAD_REQUEST),
     USER_TAKEN("User already exists.", HttpStatus.CONFLICT),
     BOOK_NOT_FOUND("Book not found.", HttpStatus.NOT_FOUND),
+    BOOK_ALREADY_EXISTS("Book already exists", HttpStatus.CONFLICT),
     TITLE_IS_EMPTY("Title must not be empty", HttpStatus.BAD_REQUEST);
 
     private final String message;

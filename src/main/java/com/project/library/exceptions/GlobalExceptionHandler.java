@@ -1,6 +1,7 @@
 package com.project.library.exceptions;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -41,5 +42,25 @@ public class GlobalExceptionHandler {
                 error.getMessage()
         );
         return new ResponseEntity<>(response, error.getStatus());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationErrors(
+            MethodArgumentNotValidException ex
+    ) {
+
+        String message = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .findFirst()
+                .map(error -> error.getDefaultMessage())
+                .orElse("Validation error");
+
+        ErrorResponse response = new ErrorResponse(
+                400,
+                message
+        );
+
+        return ResponseEntity.badRequest().body(response);
     }
 }
