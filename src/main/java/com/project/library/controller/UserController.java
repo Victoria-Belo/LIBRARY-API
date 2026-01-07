@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/v1/user")
@@ -105,13 +106,13 @@ public class UserController {
     }
 
     @PostMapping("/book/add")
-    public User addBook(@AuthenticationPrincipal User user, @RequestBody OpenLibraryDTO dto){
+    public User addBook(@AuthenticationPrincipal User user,  @Valid  @RequestBody OpenLibraryDTO dto){
         return bookService.addBook(user.getEmail(), dto);
     }
 
     @DeleteMapping("/book/remove")
-    public User removeBook(@AuthenticationPrincipal User user, @RequestParam String title){
-        bookService.removeBook(user.getEmail(), title);
+    public User removeBook(@AuthenticationPrincipal User user, @RequestParam UUID id){
+        bookService.removeBook(user.getEmail(), id);
         return null;
     }
 

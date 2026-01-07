@@ -1,5 +1,8 @@
 package com.project.library.DTO;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+
 import java.util.List;
 
 /**
@@ -7,8 +10,13 @@ import java.util.List;
 U    */
 public class OpenLibraryDTO {
 
+    @NotEmpty(message = "Author name is required")
     private List<String> authorName;
+
+    @NotBlank(message = "Title is required")
     private String title;
+
+    @NotBlank(message = "Image is required")
     private String image;
 
     public OpenLibraryDTO(){}

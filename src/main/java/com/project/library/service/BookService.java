@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.MissingFormatArgumentException;
+import java.util.UUID;
 
 /**
  * @author Victoria
@@ -26,7 +27,7 @@ public class BookService {
 
     public List<FavoriteBook> allBooks(String email){
         var user = userRepository.findUserEmailQuery(email);
-        if(user.getUsername() == null){
+        if(user == null){
             throw new UserValidationException(UserErrorType.USER_NOT_FOUND);
         }
         return user.getBooks();
@@ -37,22 +38,21 @@ public class BookService {
         if(user.getUsername() == null){
             throw new UserValidationException(UserErrorType.USER_NOT_FOUND);
         }
-        FavoriteBook favoriteBook = new FavoriteBook( dto.getTitle(), dto.getImage(),dto.getAuthorName());
+        FavoriteBook favoriteBook = new FavoriteBook(dto.getTitle(), dto.getImage(),dto.getAuthorName());
+        if(user.getBooks().contains(favoriteBook)){
+            throw new UserValidationException(UserErrorType.BOOK_ALREADY_EXISTS);
+        }
         user.addBook(favoriteBook);
-        userRepository.save(user);
-        return user;
+        return userRepository.save(user);
     }
 
-    public void removeBook(String email, String title){
+    public void removeBook(String email, UUID id){
         var user = userRepository.findUserEmailQuery(email);
         if(user == null){
             throw new UserValidationException(UserErrorType.USER_NOT_FOUND);
         }
-        if(title == null || title.isEmpty()){
-            throw new UserValidationException(UserErrorType.TITLE_IS_EMPTY);
-        }
         boolean removed = user.getBooks()
-                .removeIf(book -> book.getTitle().equalsIgnoreCase(title));
+                .removeIf(book -> book.getBookID().equals(id));
         if (!removed) {
             throw new UserValidationException(UserErrorType.BOOK_NOT_FOUND);
         }
