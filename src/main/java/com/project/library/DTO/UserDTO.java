@@ -13,6 +13,10 @@ public class UserDTO {
     @Size(min = 5, groups = {UserDTOValidation.Create.class, UserDTOValidation.UpdatePassword.class}, message = "Password must have at least 5 characters.")
     private String password;
 
+    private String role;
+
+    public UserDTO(){}
+
     public UserDTO(String email, String password) {
         this.email = email;
         this.password = password;
