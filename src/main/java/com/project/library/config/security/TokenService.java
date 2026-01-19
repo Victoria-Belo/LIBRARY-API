@@ -7,7 +7,6 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.project.library.model.User;
-
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -15,7 +14,6 @@ import java.time.ZoneOffset;
 /**
  * @author Victoria
  */
-
 @Service
 public class TokenService {
 
@@ -40,7 +38,6 @@ public class TokenService {
     public String validateToken(String token){
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            System.out.println("token é valido? " + token);
             return JWT.require(algorithm)
                     .withIssuer("hermes")
                     .build()

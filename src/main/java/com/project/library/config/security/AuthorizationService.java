@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 /**
  * @author Victoria
  */
-
-
 @Service
 public class AuthorizationService implements UserDetailsService {
 

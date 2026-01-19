@@ -31,7 +31,6 @@ public class SecurityFilter extends OncePerRequestFilter {
         var token = this.recoverToken(request);
         if(token != null){
             var subject = tokenService.validateToken(token);
-            System.out.println("subject: "+  subject);
             UserDetails user = userRepository.findByEmail(subject);
             var authentication =
                     new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
@@ -52,7 +51,6 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
-
         return path.equals("/api/v1/user/login")
                 || path.equals("/api/v1/user/register");
     }
