@@ -7,9 +7,6 @@ import java.util.UUID;
 
 /**
  * @author Victoria
- * A persistência de objetos de valor (Value Objects) envolve o armazenamento de seus atributos
- * dentro da entidade que os compõe, sem a necessidade de um identificador próprio,
- * pois eles não possuem identidade independente no sistema.
  */
 @Embeddable
 public class FavoriteBook {
